@@ -42,17 +42,19 @@ Param(
     [string]$Sigla
 )
 
+# Instalar os módulos do VisualNetUse
+Install-Module -Name VisualNetUse -Repository SESUMRepositorio -Scope CurrentUser
+                 
+Import-Module VisualNetUse -ErrorAction Stop
+
 $mapeamento = Get-PSDrive -Name H -ErrorAction SilentlyContinue
 if ($mapeamento -and ($mapeamento.used -gt 0)) {
     Write-Host "Mapeamento $Sigla já montado !"
     return
 }
 
-
 $rede = Test-NetConnection -ComputerName 10.11.1.128
-if ($rede.PingSucceeded) {
-    Import-Module VisualNetUse
-   
+if ($rede.PingSucceeded) {       
     $titulo = 'Recebendo credenciais'
     $mensagem = 'Por favor, digite seu titulo (tre-ma\titulo) e senha (igual a do email)'
     $myCredential = $host.UI.PromptForCredential($titulo,$mensagem,'','')
