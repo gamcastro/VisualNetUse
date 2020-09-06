@@ -43,9 +43,20 @@ Param(
 )
 
 # Instalar os módulos do VisualNetUse
-Install-Module -Name VisualNetUse -Repository SESUMRepositorio -Scope CurrentUser
-                 
-Import-Module VisualNetUse -ErrorAction Stop
+$modulo = Get-InstalledModule -Name VisualNetUse -ErrorAction SilentlyContinue
+if(-Not($modulo)) {
+    #Pegando credencias do repositorio
+    $usuario = 'ZNE-MA001\remoto'
+    $secpasswd = ConvertTo-SecureString 'GOLDConecta20' -AsPlainText -Force
+    $mycreds = New-Object System.Management.Automation.PSCredential($usuario, $secpasswd)
+    
+    #Montado temporariamente o compartilhamento do repositorio
+    New-PSDrive -Name G -Root '\\10.11.40.30\PowerShellRepo' -PSProvider FileSystem -Credential $mycreds 
+
+    #Instalar o módulo do respositório
+    Install-Module -Name VisualNetUse -Repository SESUMRepositorio -Scope CurrentUser
+}              
+
 
 $mapeamento = Get-PSDrive -Name H -ErrorAction SilentlyContinue
 if ($mapeamento -and ($mapeamento.used -gt 0)) {
