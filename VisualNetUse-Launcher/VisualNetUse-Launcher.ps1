@@ -41,7 +41,6 @@ Param(
     [Parameter(Mandatory = $true)]
     [string]$Sigla
 )
-
 # Instalar os módulos do VisualNetUse
 $modulo = Get-InstalledModule -Name VisualNetUse -ErrorAction SilentlyContinue
 if(-Not($modulo)) {
@@ -57,13 +56,14 @@ if(-Not($modulo)) {
     Install-Module -Name VisualNetUse -Repository SESUMRepositorio -Scope CurrentUser
 }              
 
-
+#Verificar se o mapeamento já existe
 $mapeamento = Get-PSDrive -Name H -ErrorAction SilentlyContinue
 if ($mapeamento -and ($mapeamento.used -gt 0)) {
     Write-Host "Mapeamento $Sigla já montado !"
     return
 }
 
+#Verificar se tem conexão com o fileserver
 $rede = Test-NetConnection -ComputerName 10.11.1.128
 if ($rede.PingSucceeded) {       
     $titulo = 'Recebendo credenciais'
